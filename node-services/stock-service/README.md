@@ -19,8 +19,9 @@ Defaults to `http://localhost:4001`. Seeded with a demo customer `acme` (SKUs `W
 | GET | `/health` | Liveness check |
 | GET | `/customers/:customerId/stock` | List all stock items for a customer |
 | GET | `/customers/:customerId/stock/low` | List items at or below their reorder threshold |
+| GET | `/customers/:customerId/stock/summary` | Total inventory value (`price * quantity` summed), unit count, low-stock count |
 | GET | `/customers/:customerId/stock/:sku` | Get one item |
-| POST | `/customers/:customerId/stock` | Create an item `{ sku, name, quantity, reorderThreshold }` |
+| POST | `/customers/:customerId/stock` | Create an item `{ sku, name, price, quantity, reorderThreshold }` |
 | PATCH | `/customers/:customerId/stock/:sku` | Update fields on an item |
 | POST | `/customers/:customerId/stock/:sku/adjust` | Adjust quantity by `{ delta }` (negative to decrement); rejects if it would go below 0 |
 | DELETE | `/customers/:customerId/stock/:sku` | Remove an item |
