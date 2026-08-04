@@ -13,12 +13,14 @@ function seedDemoCustomer() {
   acme.set("WIDGET-001", {
     sku: "WIDGET-001",
     name: "Blue Widget",
+    price: 9.99,
     quantity: 42,
     reorderThreshold: 10,
   });
   acme.set("GADGET-002", {
     sku: "GADGET-002",
     name: "Red Gadget",
+    price: 24.99,
     quantity: 3,
     reorderThreshold: 5,
   });
@@ -42,6 +44,7 @@ function createStockItem(customerId, item) {
   const record = {
     sku: item.sku,
     name: item.name,
+    price: item.price ?? 0,
     quantity: item.quantity ?? 0,
     reorderThreshold: item.reorderThreshold ?? 5,
   };
@@ -83,6 +86,18 @@ function listLowStock(customerId) {
   return listStock(customerId).filter((item) => item.quantity <= item.reorderThreshold);
 }
 
+function getInventorySummary(customerId) {
+  const items = listStock(customerId);
+  const totalValue = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalUnits = items.reduce((sum, item) => sum + item.quantity, 0);
+  return {
+    totalItems: items.length,
+    totalUnits,
+    totalValue: Math.round(totalValue * 100) / 100,
+    lowStockCount: listLowStock(customerId).length,
+  };
+}
+
 module.exports = {
   listStock,
   getStockItem,
@@ -91,4 +106,5 @@ module.exports = {
   adjustStock,
   deleteStockItem,
   listLowStock,
+  getInventorySummary,
 };

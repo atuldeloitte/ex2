@@ -53,6 +53,7 @@ async def create_stock_item(
     customer_id: str,
     sku: str,
     name: str,
+    price: float = 0,
     quantity: int = 0,
     reorder_threshold: int = 5,
 ) -> dict:
@@ -63,10 +64,33 @@ async def create_stock_item(
         json={
             "sku": sku,
             "name": name,
+            "price": price,
             "quantity": quantity,
             "reorderThreshold": reorder_threshold,
         },
     )
+
+
+@mcp.tool()
+async def update_stock_item(
+    customer_id: str,
+    sku: str,
+    name: str | None = None,
+    price: float | None = None,
+    quantity: int | None = None,
+    reorder_threshold: int | None = None,
+) -> dict:
+    """Update one or more fields on an existing stock item. Only pass the fields that changed."""
+    updates = {}
+    if name is not None:
+        updates["name"] = name
+    if price is not None:
+        updates["price"] = price
+    if quantity is not None:
+        updates["quantity"] = quantity
+    if reorder_threshold is not None:
+        updates["reorderThreshold"] = reorder_threshold
+    return await _request("PATCH", f"/customers/{customer_id}/stock/{sku}", json=updates)
 
 
 @mcp.tool()
@@ -81,6 +105,12 @@ async def adjust_stock(customer_id: str, sku: str, delta: int) -> dict:
 async def delete_stock_item(customer_id: str, sku: str) -> dict:
     """Delete a stock item for a customer."""
     return await _request("DELETE", f"/customers/{customer_id}/stock/{sku}")
+
+
+@mcp.tool()
+async def get_inventory_summary(customer_id: str) -> dict:
+    """Get total inventory value (price * quantity summed across items), total units, item count, and low-stock count for a customer."""
+    return await _request("GET", f"/customers/{customer_id}/stock/summary")
 
 
 if __name__ == "__main__":

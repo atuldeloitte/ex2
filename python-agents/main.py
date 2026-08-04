@@ -11,7 +11,7 @@ load_dotenv()
 
 
 async def run(customer_id: str):
-    with open_checkpointer() as checkpointer:
+    async with open_checkpointer() as checkpointer:
         graph = build_graph(checkpointer)
         config = {"configurable": {"thread_id": customer_id}}
 

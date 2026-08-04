@@ -11,6 +11,10 @@ router.get("/customers/:customerId/stock/low", (req, res) => {
   res.json({ items: store.listLowStock(req.params.customerId) });
 });
 
+router.get("/customers/:customerId/stock/summary", (req, res) => {
+  res.json(store.getInventorySummary(req.params.customerId));
+});
+
 router.get("/customers/:customerId/stock/:sku", (req, res) => {
   const item = store.getStockItem(req.params.customerId, req.params.sku);
   if (!item) {
@@ -20,13 +24,14 @@ router.get("/customers/:customerId/stock/:sku", (req, res) => {
 });
 
 router.post("/customers/:customerId/stock", (req, res) => {
-  const { sku, name, quantity, reorderThreshold } = req.body || {};
+  const { sku, name, price, quantity, reorderThreshold } = req.body || {};
   if (!sku || !name) {
     return res.status(400).json({ error: "sku_and_name_required" });
   }
   const created = store.createStockItem(req.params.customerId, {
     sku,
     name,
+    price,
     quantity,
     reorderThreshold,
   });
